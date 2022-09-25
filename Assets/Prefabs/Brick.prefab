@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 1469179755741999851}
   - component: {fileID: 1469179755741999850}
   - component: {fileID: 1469179755741999849}
-  m_Layer: 0
+  - component: {fileID: 7723054742141833401}
+  m_Layer: 6
   m_Name: Brick
   m_TagString: Untagged
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
@@ -329,3 +330,16 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1469179755741999855}
   m_Mesh: {fileID: 0}
+--- !u!65 &7723054742141833401
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1469179755741999855}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
