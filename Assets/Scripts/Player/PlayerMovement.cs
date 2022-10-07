@@ -47,6 +47,9 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     private float m_JumpElapsedTime;
 
+    [Header("Verify")]
+    public bool m_BigPlayer;
+
     /// <summary>
     /// Player Rigidy Body
     /// </summary>
