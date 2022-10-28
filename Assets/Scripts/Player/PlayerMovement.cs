@@ -7,9 +7,9 @@ public class PlayerMovement : MonoBehaviour
     [Header("Move")]
 
     [Tooltip ("Player variable speed")]
-    [SerializeField] private float m_SpeedMove;
+    [SerializeField] private float m_SpeedMove = 5.0f;
     [Tooltip ("Player running speed")]
-    [SerializeField] private float m_SpeedRun;
+    [SerializeField] private float m_SpeedRun = 15.0f;
     [Tooltip ("Player speed rotation")]
     [SerializeField] private float m_SpeedRotation = 15f;
     /// <summary>
@@ -19,7 +19,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// Player Movement
     /// </summary>
-    private Vector3 m_Movement;
+    private Vector3 m_Movement = Vector3.zero;
 
     [Header("Ground")]
     [Tooltip ("Minimum distance for the ground")]
@@ -35,9 +35,9 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Jump")]
     [Tooltip("The force for the jump")]
-    [SerializeField] private float m_JumpForce;
+    [SerializeField] private float m_JumpForce = 6.5f;
     [Tooltip("Time to verify if the player is holding the buttom")]
-    [SerializeField] private float m_JumpTime = 0.33f;
+    [SerializeField] private float m_JumpTime = 0.2f;
     /// <summary>
     /// To confirm if the player is jumping.
     /// </summary>
@@ -50,21 +50,34 @@ public class PlayerMovement : MonoBehaviour
     [Header("Verify")]
     public bool m_BigPlayer;
 
+    [Header("Animations")]
+    [Tooltip("Animator control")]
+    [SerializeField] private Animator m_Anim;
+
+    [Header("Sounds")]
+    private AudioSource m_Audio;
+    public AudioClip JumpSmall;
+    public AudioClip JumpSuper;
+
     /// <summary>
     /// Player Rigidy Body
     /// </summary>
     private Rigidbody m_Body;
-
-    // Start is called before the first frame update
+    
     void Start()
     {
         m_Body = GetComponent<Rigidbody>();
+        m_Audio = GetComponent<AudioSource>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        m_IsGrounded = Physics.CheckSphere(m_Feet.position, m_GroundDistance, m_GroundLayer, QueryTriggerInteraction.Ignore);
+        //m_IsGrounded = Physics.CheckSphere(m_Feet.position, m_GroundDistance, m_GroundLayer, QueryTriggerInteraction.Ignore);
+        m_IsGrounded = Physics.CheckBox(m_Feet.position, new Vector3(0.45f, 0.1f, 0),Quaternion.Euler(1,1,1),m_GroundLayer,QueryTriggerInteraction.Ignore);
+        
+        if(m_IsGrounded && !m_IsJumping)
+            m_Body.velocity = new Vector3(m_Body.velocity.x, 0.0f, 0.0f);
+        
         m_Movement.x = Input.GetAxis("Horizontal");
         m_IsRunning = Input.GetButton("Fire1");
 
@@ -74,13 +87,17 @@ public class PlayerMovement : MonoBehaviour
             m_JumpElapsedTime = 0;
         }
 
+        //Moving
+        m_Anim.SetBool("Moving", Mathf.Abs(m_Movement.x) > 0);
+        m_Anim.SetBool("IsGrounded", m_IsGrounded);
+        m_Anim.SetBool("Running", m_IsRunning && Mathf.Abs(m_Movement.x) > 0);
     }
 
     void FixedUpdate() 
     {
+        Jump();  
         Move();  
         Rotate();
-        Jump();  
     }
 
     private void Move()
@@ -102,9 +119,22 @@ public class PlayerMovement : MonoBehaviour
     {
         if(m_IsJumping && m_JumpElapsedTime > (m_JumpTime/3))
         {
-            if(!Input.GetButton("Jump"))
+            if(Input.GetButton("Jump"))
             {
-                m_IsJumping = false;
+                if(!m_Audio.isPlaying)
+                {
+                    m_Audio.clip = JumpSuper;
+                    m_Audio.Play();
+                }
+            }
+            else
+            {
+                m_IsJumping = false;            
+                if(!m_Audio.isPlaying)
+                {
+                    m_Audio.clip = JumpSmall;
+                    m_Audio.Play();
+                }
             }
         }
         if(m_IsJumping && m_JumpElapsedTime < m_JumpTime)
@@ -117,6 +147,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
             m_IsJumping = false;
+
     }
     
 }
